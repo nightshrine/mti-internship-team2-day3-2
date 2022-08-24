@@ -54,6 +54,9 @@ export default {
     // Vue.jsの読み込みが完了したときに実行する処理はここに記述する
     this.iam = localStorage.getItem("userId");
     // apiからarticleを取得する
+    if (!window.localStorage.getItem("userId")) {
+      this.$router.push({name: "Login"});
+    }
   },
   methods: {
     // Vue.jsで使う関数はここで記述する

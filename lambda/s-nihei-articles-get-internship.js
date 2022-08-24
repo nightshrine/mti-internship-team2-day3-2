@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const dynamo = new AWS.DynamoDB.DocumentClient();
-const tableName = "User";
+const tableName = "Article";
 
 exports.handler = (event, context, callback) => {
   const response = {
@@ -11,14 +11,13 @@ exports.handler = (event, context, callback) => {
     body: JSON.stringify({ message: "" }),
   };
 
-  const body = JSON.parse(event.body);
-  const userId = body.userId;
+  //TODO: 取得したいテーブル名をparamオブジェクトに設定する（中身を記述）
+  const param = {
+    "TableName" : tableName
+  };
 
-  //TODO: 削除対象のテーブル名と削除したいデータのkeyをparamに設定
-  const param = {};
-
-  //dynamo.delete()を用いてデータを削除
-  dynamo.delete(param, function (err, data) {
+  //dynamo.scan()で全件取得
+  dynamo.scan(param, function (err, data) {
     if (err) {
       console.log(err);
       response.statusCode = 500;
@@ -28,8 +27,12 @@ exports.handler = (event, context, callback) => {
       });
       callback(null, response);
       return;
-    } else {
-      //TODO: 削除に成功した場合の処理を記述
     }
+    const items = data.Items;
+
+    //TODO: レスポンスボディの設定とコールバックの記述
+    response.body = JSON.stringify(items);
+    callback(null, response);
+    return;
   });
 };

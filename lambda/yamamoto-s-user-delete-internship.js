@@ -3,7 +3,6 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const tableName = "User";
 
 exports.handler = (event, context, callback) => {
-  //レスポンスの雛形
   const response = {
     statusCode: 200,
     headers: {
@@ -12,13 +11,19 @@ exports.handler = (event, context, callback) => {
     body: JSON.stringify({ message: "" }),
   };
 
-  const userId = event.queryStringParameters.userId; //見たいユーザのuserId
+  const body = JSON.parse(event.body);
+  const userId = body.userId;
 
-  //TODO: 取得対象のテーブル名と検索に使うキーをparamに宣言
-  const param = {};
+  //TODO: 削除対象のテーブル名と削除したいデータのkeyをparamに設定
+  const param = {
+    "TableName" : tableName,
+    "Key" : {
+      userId
+    }
+  };
 
-  //dynamo.get()でDBからデータを取得
-  dynamo.get(param, function (err, data) {
+  //dynamo.delete()を用いてデータを削除
+  dynamo.delete(param, function (err, data) {
     if (err) {
       console.log(err);
       response.statusCode = 500;
@@ -28,10 +33,13 @@ exports.handler = (event, context, callback) => {
       });
       callback(null, response);
       return;
+    } else {
+      //TODO: 削除に成功した場合の処理を記述
+      response.body = JSON.stringify({
+        message: "削除成功しました"
+      })
+      callback(null, response);
+      return;
     }
-
-    //TODO: 条件に該当するデータがあればパスワードを隠蔽をする処理を記述
-
-    //TODO: レスポンスボディの設定とコールバックを記述
   });
 };

@@ -13,9 +13,18 @@ exports.handler = (event, context, callback) => {
 
   const body = JSON.parse(event.body);
 
-  //TODO: paramに更新対象のテーブル名と更新内容を記述
-  const param = {};
+  //TODO: DBに登録するための情報をparamオブジェクトとして宣言する（中身を記述）
+  const param = {
+    TableName: tableName,
+    Item: {
+      userId : body.userId,
+      password: body.password,
+      nickname: body.nickname,
+      age: body.age,
+    }
+  };
 
+  //dynamo.put()でDBにデータを登録
   dynamo.put(param, function (err, data) {
     if (err) {
       console.log(err);
@@ -27,7 +36,12 @@ exports.handler = (event, context, callback) => {
       callback(null, response);
       return;
     } else {
-      //TODO: 更新に成功した場合の処理を記述
+      //TODO: 登録に成功した場合の処理を記述
+      response.body = JSON.stringify({
+        message: "登録成功しました"
+      })
+      callback(null, response);
+      return;
     }
   });
 };
